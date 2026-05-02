@@ -1,16 +1,10 @@
-# Blueprint de Render: define la web, la base de datos y el cron diario.
+# Blueprint de Render: define la web y la base de datos.
 #
-# Para desplegar:
-#   1. Sube este repo a GitHub.
-#   2. En Render → New → Blueprint → conecta el repo.
-#      Render detectará automáticamente este fichero y creará los 3 recursos.
-#   3. Cuando pida los valores marcados con `sync: false`, introdúcelos en
-#      el dashboard. APP_PASSWORD, FLASK_SECRET_KEY y BREVO_API_KEY se pueden
-#      generar automáticamente o pegar.
-#
-# El plan `free` aplica a la web y al cron; la base de datos `free` de Render
-# se elimina a los 90 días — antes de ese plazo, exporta los datos o pasa a
-# plan de pago (~7 $/mes en el momento de redactar este fichero).
+# El cron job diario está temporalmente desactivado porque el plan free de
+# Render ya no soporta cron jobs (cambio de pricing). Mientras los correos
+# diarios se "simulan" (sin Brevo configurado), no se pierde nada.
+# Cuando quieras activar correos reales, añadiremos el cron diario gratis
+# vía GitHub Actions (workflow .github/workflows/cron-diario.yml).
 
 databases:
   - name: radar-db
@@ -35,53 +29,20 @@ services:
           name: radar-db
           property: connectionString
       - key: FLASK_SECRET_KEY
-        generateValue: true        # Render genera una cadena aleatoria
+        generateValue: true
       - key: APP_PASSWORD
-        sync: false                # Lo introduces en el dashboard (SaintPeter)
+        sync: false
       - key: PUBLIC_BASE_URL
-        sync: false                # Pon https://<nombre-servicio>.onrender.com tras el primer deploy
+        sync: false
       - key: BREVO_API_KEY
-        sync: false                # Vacío al principio; los correos quedan en logs
+        sync: false
       - key: BREVO_SENDER_EMAIL
         sync: false
       - key: BREVO_SENDER_NAME
         value: Radar Regulatorio
       - key: RADAR_DISABLE_SCHEDULER
-        value: "1"                 # El cron job se encarga; el scheduler interno duplicaría
+        value: "1"
       - key: INGEST_LOOKBACK_DAYS
         value: "95"
       - key: DISPLAY_WINDOW_DAYS
         value: "92"
-
-  # ----------------------- Cron diario ------------------------- #
-  # Se ejecuta a las 09:00 UTC, que equivale a 10:00 hora de Madrid en
-  # horario de invierno (CET, oct–mar) y 11:00 en verano (CEST, mar–oct).
-  # Si quieres exactamente 10:00 todo el año, edita el campo `schedule` en
-  # el dashboard al cambiar de horario, o duplica este cron a 08:00 y 09:00
-  # UTC con un check de hora local en el script.
-  - type: cron
-    name: radar-cron-diario
-    runtime: python
-    plan: free
-    schedule: "0 9 * * *"
-    buildCommand: pip install -r requirements.txt
-    startCommand: python run_ingest.py --enviar
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.9
-      - key: DATABASE_URL
-        fromDatabase:
-          name: radar-db
-          property: connectionString
-      - key: FLASK_SECRET_KEY
-        sync: false                # No se usa, pero config.py lo lee
-      - key: APP_PASSWORD
-        sync: false
-      - key: PUBLIC_BASE_URL
-        sync: false                # Necesario para los enlaces de baja del correo
-      - key: BREVO_API_KEY
-        sync: false
-      - key: BREVO_SENDER_EMAIL
-        sync: false
-      - key: BREVO_SENDER_NAME
-        value: Radar Regulatorio
