@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Novedades · Radar Regulatorio{% endblock %}
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Novedades de los últimos 3 meses</h2>
+        <p class="muted">{{ publicaciones|length }} publicación{{ '' if publicaciones|length == 1 else 'es' }} sin archivar.</p>
+    </div>
+    <form action="{{ url_for('radar.refrescar') }}" method="post">
+        <button class="btn btn-primary" type="submit" title="Buscar nuevas publicaciones ahora">
+            ↻ Refrescar
+        </button>
+    </form>
+</section>
+
+{% if publicaciones %}
+    <ul class="lista-publicaciones">
+        {% for p in publicaciones %}
+            <li class="pub">
+                <div class="pub-meta">
+                    <span class="badge badge-{{ p.fuente|lower }}">{{ p.fuente }}</span>
+                    <span class="fecha">{{ p.fecha_publicacion }}</span>
+                    {% if p.departamento %}<span class="departamento">{{ p.departamento }}</span>{% endif %}
+                </div>
+                <a class="pub-titulo" href="{{ p.url }}" target="_blank" rel="noopener noreferrer">{{ p.titulo }}</a>
+                <form action="{{ url_for('radar.archivar', pub_id=p.id) }}" method="post" class="pub-acciones">
+                    <button class="btn btn-link" type="submit" title="Mover al Repositorio">Archivar</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="empty">
+        <p>No hay novedades en los últimos {{ ventana_dias }} días.</p>
+        <p class="muted">Pulsa <strong>Refrescar</strong> para buscar publicaciones nuevas.</p>
+    </div>
+{% endif %}
+{% endblock %}

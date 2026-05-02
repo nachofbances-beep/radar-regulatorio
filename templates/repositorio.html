@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Repositorio · Radar Regulatorio{% endblock %}
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Repositorio</h2>
+        <p class="muted">{{ publicaciones|length }} publicación{{ '' if publicaciones|length == 1 else 'es' }} archivada{{ '' if publicaciones|length == 1 else 's' }}.</p>
+    </div>
+</section>
+
+{% if publicaciones %}
+    <ul class="lista-publicaciones">
+        {% for p in publicaciones %}
+            <li class="pub">
+                <div class="pub-meta">
+                    <span class="badge badge-{{ p.fuente|lower }}">{{ p.fuente }}</span>
+                    <span class="fecha">{{ p.fecha_publicacion }}</span>
+                    {% if p.departamento %}<span class="departamento">{{ p.departamento }}</span>{% endif %}
+                </div>
+                <a class="pub-titulo" href="{{ p.url }}" target="_blank" rel="noopener noreferrer">{{ p.titulo }}</a>
+                <form action="{{ url_for('radar.desarchivar', pub_id=p.id) }}" method="post" class="pub-acciones">
+                    <button class="btn btn-link" type="submit" title="Devolver a Novedades">Desarchivar</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <div class="empty">
+        <p>El repositorio está vacío.</p>
+        <p class="muted">Las publicaciones que archives desde la pestaña Novedades aparecerán aquí.</p>
+    </div>
+{% endif %}
+{% endblock %}

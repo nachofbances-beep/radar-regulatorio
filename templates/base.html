@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Radar Regulatorio{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="container">
+            <h1 class="brand">
+                <a href="{{ url_for('radar.index') }}">Radar Regulatorio</a>
+            </h1>
+            <p class="subtitle">Novedades regulatorias para entidades de crédito · BOE y Banco de España</p>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <div class="container tabs-row">
+            <a href="{{ url_for('radar.index') }}"
+               class="tab {% if active_tab == 'novedades' %}active{% endif %}">Novedades</a>
+            <a href="{{ url_for('radar.repositorio') }}"
+               class="tab {% if active_tab == 'repositorio' %}active{% endif %}">Repositorio</a>
+            <a href="{{ url_for('radar.suscribirse') }}"
+               class="tab {% if active_tab == 'suscribirse' %}active{% endif %}">Alertas por correo</a>
+            <a href="{{ url_for('auth.logout') }}" class="tab tab-logout">Salir</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flashes">
+                    {% for category, msg in messages %}
+                        <div class="flash flash-{{ category }}">{{ msg }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <small>
+                Radar Regulatorio — fuentes: BOE (datos abiertos) y Banco de España.
+                · <a href="{{ url_for('radar.privacidad') }}">Política de protección de datos</a>
+            </small>
+        </div>
+    </footer>
+</body>
+</html>

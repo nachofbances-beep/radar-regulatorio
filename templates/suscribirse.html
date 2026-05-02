@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Alertas por correo · Radar Regulatorio{% endblock %}
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Alertas por correo</h2>
+        <p class="muted">Recibe un resumen diario a las 10:00 (hora peninsular) con las novedades de las últimas 24 horas.</p>
+    </div>
+</section>
+
+<form class="form-suscripcion" action="{{ url_for('radar.suscribirse') }}" method="post">
+    <label for="email">Correo electrónico</label>
+    <input type="email" id="email" name="email" required placeholder="tu@correo.com" autocomplete="email">
+
+    <label class="checkbox-label">
+        <input type="checkbox" name="consentimiento" required>
+        <span>
+            Acepto que mi correo se utilice <strong>únicamente</strong> para recibir las alertas diarias del
+            Radar Regulatorio. Puedo darme de baja en cualquier momento desde el enlace incluido en cada
+            correo. Más información en la
+            <a href="{{ url_for('radar.privacidad') }}">política de protección de datos</a>.
+        </span>
+    </label>
+
+    <button class="btn btn-primary" type="submit">Suscribirme</button>
+</form>
+{% endblock %}

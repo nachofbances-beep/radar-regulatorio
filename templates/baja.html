@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Baja · Radar Regulatorio{% endblock %}
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Baja en las alertas</h2>
+    </div>
+</section>
+
+{% if email %}
+    <div class="empty">
+        <p>Has dado de baja la dirección <strong>{{ email }}</strong>. Tus datos se eliminarán tras un periodo razonable de conservación únicamente con fines de prueba de la baja.</p>
+        <p class="muted">Si quieres volver a suscribirte, puedes hacerlo desde la pestaña <a href="{{ url_for('radar.suscribirse') }}">Alertas por correo</a>.</p>
+    </div>
+{% else %}
+    <div class="empty">
+        <p>El enlace no es válido o esa dirección ya no estaba suscrita.</p>
+    </div>
+{% endif %}
+{% endblock %}
